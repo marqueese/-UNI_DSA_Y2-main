@@ -1,34 +1,30 @@
-# Define a node for the singly linked list
+# Node class for storing data and link
 class Node:
     def __init__(self, data):
-        # store the value and a reference to the next node
         self.data = data
         self.next = None
 
 
-# Define the singly linked list (SLL) class with basic operations
-class SLL:
+# Singly Linked List with CRUD + advanced operations
+class SinglyLinkedList:
     def __init__(self):
-        # head points to the first node in the list
         self.head = None
 
+    # INSERT a new node at the end
     def insert(self, data):
-        """Insert a new node with `data` at the end of the list."""
         new_node = Node(data)
 
-        # if list is empty, new node becomes the head
-        if not self.head:
+        if not self.head:  # Empty list
             self.head = new_node
             return
 
-        # otherwise walk to the end and append
         current = self.head
-        while current.next:
+        while current.next:  # Move to last node
             current = current.next
         current.next = new_node
 
+    # SEARCH for a value, return True/False
     def search(self, data):
-        """Return True if a node with `data` exists in the list, else False."""
         current = self.head
         while current:
             if current.data == data:
@@ -36,101 +32,230 @@ class SLL:
             current = current.next
         return False
 
+    # DELETE first occurrence of given value
     def delete(self, data):
-        """Delete the first node that contains `data`. If not found, do nothing."""
-        # nothing to delete
         if not self.head:
             return
 
-        # if the head contains the data, remove it
+        # Delete head node
         if self.head.data == data:
             self.head = self.head.next
             return
 
-        # search for the node whose next node contains the data
         current = self.head
         while current.next:
             if current.next.data == data:
-                # bypass the node to delete it
                 current.next = current.next.next
                 return
             current = current.next
 
+    # TRAVERSE and print all nodes
     def traverse(self):
-        """Print all node values in order."""
         current = self.head
+        if not current:
+            print("List is empty.")
+            return
+
         while current:
-            print(current.data)
+            print(current.data, end=" -> ")
             current = current.next
+        print("None")
 
+    # SWAP data between two nodes
+    def swap_nodes(self, a, b):
+        temp = a.data
+        a.data = b.data
+        b.data = temp
 
-def _parse_input_value(user_input):
-    """Try to convert input to int, otherwise return the original string."""
-    try:
-        return int(user_input)
-    except ValueError:
-        return user_input
+    # BUBBLE SORT linked list
+    def bubble_sort(self):
+        if self.head is None:
+            return
+
+        swapped = True
+        while swapped:
+            swapped = False
+            curr = self.head
+
+            while curr.next:
+                if curr.data > curr.next.data:
+                    self.swap_nodes(curr, curr.next)
+                    swapped = True
+                curr = curr.next
+
+    # REVERSE linked list
+    def reverse(self):
+        prev = None
+        current = self.head
+
+        while current:
+            next_node = current.next
+            current.next = prev
+            prev = current
+            current = next_node
+
+        self.head = prev
+
+    # REMOVE Nth node from the end
+    def remove_nth_from_end(self, n):
+        dummy = Node(0)
+        dummy.next = self.head
+
+        first = dummy
+        second = dummy
+
+        for _ in range(n + 1):
+            if first is None:
+                return
+            first = first.next
+
+        while first:
+            first = first.next
+            second = second.next
+
+        second.next = second.next.next
+        self.head = dummy.next
+
+    # MERGE TWO sorted lists into new sorted list
+    def merge_two(self, ll1, ll2):
+        ll3 = SinglyLinkedList()
+        n1 = ll1.head
+        n2 = ll2.head
+
+        while n1 and n2:
+            if n1.data < n2.data:
+                ll3.insert(n1.data)
+                n1 = n1.next
+            else:
+                ll3.insert(n2.data)
+                n2 = n2.next
+
+        while n1:
+            ll3.insert(n1.data)
+            n1 = n1.next
+
+        while n2:
+            ll3.insert(n2.data)
+            n2 = n2.next
+
+        return ll3
+
+    # MERGE N sorted lists using repeated merging
+    def merge_n(self, list_of_lists):
+        if not list_of_lists:
+            return None
+
+        result = list_of_lists[0]
+
+        for i in range(1, len(list_of_lists)):
+            result = self.merge_two(result, list_of_lists[i])
+
+        return result
+
 
 
 def menu():
-    """Interactive multiple-choice menu to operate on the linked list."""
-    sll = SLL()
-
-    # pre-populate with a few values for demonstration
-    sll.insert(10)
-    sll.insert(20)
-    sll.insert(30)
+    sll = SinglyLinkedList()
 
     while True:
-        print('\nChoose an action:')
-        print('1) Insert a value')
-        print('2) Delete a value')
-        print('3) Search for a value')
-        print('4) Traverse / print the list')
-        print('5) Show example operations (re-populate demo list)')
-        print('6) Exit')
+        print("\n=========== Linked List Menu ===========")
+        print("1. Insert element")
+        print("2. Search element")
+        print("3. Delete element")
+        print("4. Traverse list (Print list)")
+        print("5. Sort list (Bubble Sort)")
+        print("6. Reverse list")
+        print("7. Remove N-th node from end")
+        print("8. Merge TWO sorted lists")
+        print("9. Merge N sorted lists")
+        print("0. Exit")
+        print("========================================")
 
-        choice = input('Enter choice (1-6): ').strip()
+        choice = input("Enter choice: ")
 
-        if choice == '1':
-            val = _parse_input_value(input('Enter value to insert: ').strip())
+        # INSERT
+        if choice == "1":
+            val = int(input("Enter value to insert: "))
             sll.insert(val)
-            print('Inserted:', val)
+            print("Inserted.")
 
-        elif choice == '2':
-            val = _parse_input_value(input('Enter value to delete: ').strip())
+        # SEARCH
+        elif choice == "2":
+            val = int(input("Enter value to search: "))
+            print("Found!" if sll.search(val) else "Not found.")
+
+        # DELETE
+        elif choice == "3":
+            val = int(input("Enter value to delete: "))
             sll.delete(val)
-            print('Attempted delete of:', val)
+            print("Deleted (if existed).")
 
-        elif choice == '3':
-            val = _parse_input_value(input('Enter value to search for: ').strip())
-            found = sll.search(val)
-            print('Found' if found else 'Not found')
-
-        elif choice == '4':
-            print('\nList contents:')
+        # TRAVERSE
+        elif choice == "4":
+            print("Linked List:")
             sll.traverse()
 
-        elif choice == '5':
-            # clear and re-populate demo list
-            sll = SLL()
-            sll.insert(10)
-            sll.insert(20)
-            sll.insert(30)
-            print('Demo list re-populated with 10, 20, 30')
+        # SORT
+        elif choice == "5":
+            sll.bubble_sort()
+            print("List sorted.")
 
-        elif choice == '6':
-            print('Exiting.')
+        # REVERSE
+        elif choice == "6":
+            sll.reverse()
+            print("List reversed.")
+
+        # REMOVE N-th from end
+        elif choice == "7":
+            n = int(input("Enter N: "))
+            sll.remove_nth_from_end(n)
+            print("Node removed (if existed).")
+
+        # MERGE TWO SORTED LISTS
+        elif choice == "8":
+            print("\n-- Enter elements for List 1 (comma separated) --")
+            l1_values = list(map(int, input().split(',')))
+            list1 = SinglyLinkedList()
+            for v in l1_values:
+                list1.insert(v)
+            list1.bubble_sort()
+
+            print("\n-- Enter elements for List 2 (comma separated) --")
+            l2_values = list(map(int, input().split(',')))
+            list2 = SinglyLinkedList()
+            for v in l2_values:
+                list2.insert(v)
+            list2.bubble_sort()
+
+            merged = sll.merge_two(list1, list2)
+            print("\nMerged List:")
+            merged.traverse()
+
+        # MERGE N LISTS
+        elif choice == "9":
+            count = int(input("How many lists? "))
+            lists = []
+
+            for i in range(count):
+                vals = list(map(int, input(f"Enter elements for List {i+1}: ").split(',')))
+                temp = SinglyLinkedList()
+                for v in vals:
+                    temp.insert(v)
+                temp.bubble_sort()
+                lists.append(temp)
+
+            merged = sll.merge_n(lists)
+            print("\nMerged List:")
+            merged.traverse()
+
+        # EXIT
+        elif choice == "0":
+            print("Exiting...")
             break
 
         else:
-            print('Invalid choice, please enter a number between 1 and 6.')
+            print("Invalid choice! Try again.")
 
 
-def main():
-    # run the interactive menu when executed directly
-    menu()
-
-
-if __name__ == '__main__':
-    main()
+# Run the menu
+menu()
