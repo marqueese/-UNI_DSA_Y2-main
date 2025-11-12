@@ -106,16 +106,6 @@ class BST:
 #Step 6: Implement the Traverse method to output all data items (here keys are printed for simplicity) in the BST. There are two types of traversals:
 #breadth-first traversal and depth-first traversal, which includes preOrder,inOrder, and postOrder traversal
 
-    def inorder(self, key):
-        return self._inorder(self.root)
-        print()
-
-    def _inorder(self, current_node):
-        if current_node is not None: #current node is not empty
-            self._inorder(current_node.left)
-            print(current_node.value, end='')
-            self._inorder(current_node.right)
-
     def preorder(self):
         self._preorder(self.root)
         print()
@@ -125,6 +115,41 @@ class BST:
             print(current_node.value, end='')
             self._preorder(current_node.left)
             self._preorder(current_node.right)
+
+#Step 1: Consider implementing the traversal methods iteratively, which will
+#keep track of the nodes using a stack. For the preOrder traversal (VLR), after
+#visiting a node's value, we push its right and then its left child onto the stack. Given the nature of a stack - FILO, the left child will be the first to be popped.
+
+    def preorder_iter(self):
+        if not self.root:  #if the root is empty return nothing
+            return []
+        stack, output = [self.root], [] # initialist 2 arrays 
+        while stack: # run whilst theres items in the stack 
+            node = stack.pop() # pop the node and save it to a new variable 
+            if node:
+                output.append(node.value)
+            if node.right:
+                stack.append(node.right)
+            if node.left:
+                stack.append(node.left)
+        print(output)
+
+    
+    def inorder(self, key):
+        return self._inorder(self.root)
+        print()
+
+    def _inorder(self, current_node):
+        if current_node is not None: #current node is not empty
+            self._inorder(current_node.left)
+            print(current_node.value, end='')
+            self._inorder(current_node.right)
+            
+#Step 2: For the inOrder traversal (LVR), we keep pushing the left child nodes
+#onto the stack. When a node has no left child (or its left child is already visited),
+#its value will be visited and its right child will be pushed onto the stack.
+
+
         
     def postorder(self):
         self._postorder(self.root)
